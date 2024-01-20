@@ -1,0 +1,91 @@
+:root {
+    --primary: #984009;
+    --dark: #1C1C1C;
+    --danger: #895E2E;
+    --success: #D29749;
+    --white: #F8F8F8;
+}
+
+html, body, #root {
+    height: 100%;
+    width: 100%;
+    position: fixed;
+}
+
+header{
+    background-color: var(--primary);
+}
+
+header > div {
+    cursor: pointer;
+    transition: 0.5s;
+    padding: 10px 20px;
+    text-align: right;
+}
+
+header > div:hover {
+    background-color: rgba(0,0,0,0.2);
+    transition: 0.5s;
+}
+
+header img {
+    width: 50px;
+    height: 50px;
+    border-radius: 100%;
+    margin-left: 15px;
+}
+
+header span:not(.mdi) {
+    margin-bottom: -10px;
+}
+header span.mdi {
+    font-size: 20px;
+    margin-left: 10px;
+}
+header small {
+    display: block;
+    margin-top: -20px;
+}
+
+sidebar {
+    background-color: black;
+}
+
+sidebar ul li{
+    list-style: none;
+    width: 100%;
+}
+
+sidebar ul li a{
+    color: #fff;
+    width: 100%;
+    opacity: 0.6;
+    display: flex;
+    text-decoration: none;
+    align-items: center;
+    padding: 10px 10px;
+    margin: 2.5px 0;
+    transition: 0.5s;
+    border-radius: 5px;
+}
+sidebar ul li a.active{
+    opacity: 1;
+    background-color: rgba(44, 43, 43, 0.6);
+}
+sidebar ul li a.active .mdi{
+    color: var(--primary)
+}
+sidebar ul li a.visited, sidebar ul li a:focus{
+    color: #F8F8F8
+}
+sidebar ul li a:hover{
+    opacity: 1;
+    background-color: rgba(44, 43, 43, 0.6);
+}
+sidebar ul li a span.mdi{
+    font-size: 25px;
+    margin: 0 15px;
+}
+sidebar ul li a text{
+    font-size: 18px;
+}
