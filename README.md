@@ -1,6 +1,6 @@
 1. [Executando Front-End](#frontend)
 2. [Executando Back-end](#backend)
-3. [Dúvidas](#duvidas)
+3. [Dúvidas](#dúvidas)
 
 # Frontend
 
