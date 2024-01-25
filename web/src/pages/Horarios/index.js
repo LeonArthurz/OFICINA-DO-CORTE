@@ -269,6 +269,21 @@ const Horarios = () => {
                             );
                             setComponent('drawer', true);
                         }}
+                        onSelectSlot={(slotInfo) => {
+                            const { start, end } = slotInfo;
+                            dispatch(
+                                updateHorario({
+                                    behavior: 'create',
+                                    horario: {
+                                        ...horario,
+                                        dias: [moment(start).day()],
+                                        inicio: start,
+                                        fim: end,
+                                    },
+                                })
+                            );
+                            setComponent('drawer', true);
+                        }}
                         localizer={localizer}
                         toolbar={false}
                         formats={{

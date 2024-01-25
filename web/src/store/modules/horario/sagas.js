@@ -90,17 +90,20 @@ export function* addHorario() {
     }
 }
 // FUNÇÃO PARA FILTRAR OS COLABORADORES
-export function* filterColaboradores(){
+export function* filterColaboradores() {
     const { form, horario } = yield select((state) => state.horario);
 
     try {
-        yield put(updateHorario({ form: {...form, filtering: true }}));
-        const { data:res } = yield call(
-            api.post, 
-            `/horario/colaboradores/`,
-            { especialidades: horario.especialidades });
+        yield put(updateHorario({ form: { ...form, filtering: true } }));
 
-        yield put(updateHorario({ form: {...form, filtering: false }}));
+        const { data: res } = yield call(
+            api.post,
+            `/horario/colaboradores/`,
+            { especialidades: horario.especialidades }
+        );
+
+        yield put(updateHorario({ form: { ...form, filtering: false } }));
+
         if (res.error) {
             alert(res.message);
             return false;
@@ -108,10 +111,11 @@ export function* filterColaboradores(){
 
         yield put(updateHorario({ colaboradores: res.colaboradores }));
     } catch (err) {
-        yield put(updateHorario({ form: {...form, filtering: false }}));
+        yield put(updateHorario({ form: { ...form, filtering: false } }));
         alert(err.message);
     }
 }
+
 // FUNÇÃO P/ REMOVER OS HORÁRIOS
 export function* removeHorario() {
 

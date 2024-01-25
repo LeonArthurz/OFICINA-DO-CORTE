@@ -71,7 +71,6 @@ export function* addColaboradores() {
 
     const { form, colaborador, components, behavior } = yield select((state) => state.colaborador);
 
-
     try {
         yield put(updateColaborador({ form: {...form, saving: true }}));
         let res = {};
@@ -84,7 +83,8 @@ export function* addColaboradores() {
                 email: colaborador.email,
                 dataNascimento: colaborador.dataNascimento,
                 sexo: colaborador.sexo,
-                status: colaborador.vinculo
+                status: colaborador.vinculo,
+                especialidades: colaborador.especialidades
             });
             res = response.data;
         } else {
