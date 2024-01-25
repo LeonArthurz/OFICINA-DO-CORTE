@@ -13,7 +13,7 @@ app.use(cors());
 app.use(busboy());
 app.use(busboyBodyParser());
 
-// VARIABLES
+// VARIABLE
 app.set('port', 8000);
 
 // ROTAS

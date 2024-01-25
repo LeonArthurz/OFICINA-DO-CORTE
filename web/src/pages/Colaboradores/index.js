@@ -43,6 +43,7 @@ const Colaboradores = () => {
     // FUNÇÃO PARA REMOVER COLABORADOR NA MODAL
     const remove = () => {
         dispatch(unlinkColaborador());
+        setComponent('confirmDelete', false);
     };
 
     // EFEITO PARA CARREGAR TODOS OS COLABORADORES AO MONTAR O COMPONENTE
@@ -50,6 +51,7 @@ const Colaboradores = () => {
         dispatch(allColaboradores());
         dispatch(allServicos());
     }, []);
+    
 
     return (
         <div className="col p-5 overflow-auto h-100">
@@ -150,6 +152,7 @@ const Colaboradores = () => {
                                 data={servicos}
                                 value={colaborador.especialidades}
                                 onChange={(especialidade) => setColaborador('especialidades', especialidade)}
+                                placeholder="Selecionar"
                             /> 
                         </div>
                     </div>

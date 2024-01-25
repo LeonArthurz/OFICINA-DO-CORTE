@@ -100,11 +100,13 @@ const Horarios = () => {
     useEffect(() => {
         dispatch(allHorarios());
         dispatch(allServicos());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
 
     useEffect(() => {
         dispatch(filterColaboradores());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [horario.especialidades]);
 
 
@@ -129,6 +131,7 @@ const Horarios = () => {
                                 onChange={(value) => {
                                     setHorario('dias', value);
                                 }}
+                                placeholder="Selecionar"
                             />
                         </div>
                         <div className="col-6 mt-3">
@@ -165,6 +168,7 @@ const Horarios = () => {
                                 onChange={(e) => {
                                     setHorario('especialidades', e);
                                 }}
+                                placeholder="Selecionar"
                             />
                         </div>
                         <div className="col-12 mt-3">
@@ -177,6 +181,7 @@ const Horarios = () => {
                                 onChange={(e) => {
                                     setHorario('colaboradores', e);
                                 }}
+                                placeholder="Selecionar"
                             />
                         </div>
                     </div>

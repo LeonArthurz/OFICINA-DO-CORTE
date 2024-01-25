@@ -41,16 +41,10 @@ router.get('/servicos/:salaoId', async (req, res) => {
 router.get('/:id', async (req, res) => {
     try {
         const salao = await Salao.findById(req.params.id).select(
-            'capa nome endereco.cidade geo.coordinates telefone'
+            'capa nome endereco.cidade telefone'
         );
 
-        // DISTÂNCIA
-        const distance = turf.distance(
-            turf.point(salao.geo.coordinates),
-            turf.point([-30.043858, -51.103487]) // COORDENADAS DE POA, FALTA ATUALIZAR O FRONT
-        );
-
-        res.json({ error: false, salao, distance });
+        res.json({ error: false, salao });
 
     } catch (err) {
         res.json({ error: true, message: err.message });

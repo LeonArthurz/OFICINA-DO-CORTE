@@ -58,10 +58,12 @@ router.delete('/:horarioId', async (req, res) => {
 // EXTRAIR OS COLABORADORES PELO SERVICO
 router.post('/colaboradores', async (req, res) => {
     try {
+        console.log("Especialidades recebidas:", req.body.especialidades);
         const colaboradorServico = await ColaboradorServico.find({
             servicoId: { $in: req.body.especialidades },
             status: 'A'
         }).populate('colaboradorId', 'nome').select('colaboradorId -_id');
+
 
         const listaColaboradores = _.uniqBy(colaboradorServico, (vinculo) =>
         vinculo.colaboradorId._id.toString()
@@ -69,6 +71,7 @@ router.post('/colaboradores', async (req, res) => {
             label: vinculo.colaboradorId.nome,
             value: vinculo.colaboradorId._id
         }));
+        console.log("Lista de Colaboradores:", listaColaboradores);
         
         res.json({ error: false, colaboradores: listaColaboradores });
 

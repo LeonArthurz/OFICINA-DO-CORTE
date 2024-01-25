@@ -6,7 +6,27 @@ import { produce } from 'immer';
 
 // ESTRUTURA DO REDUCER
 const INITIAL_STATE = {
+    behavior: "create",
+    components: {
+        drawer: false,
+        confirmDelete: false,
+        view: 'week'
+    },
+    form: {
+        filtering: false,
+        disabled: true,
+        saving: false,
+    },
+    colaboradores: [],
+    servicos: [],
     agendamentos: [],
+    agendamento: {
+        dias: [],
+        inicio: '',
+        fim: '',
+        especialidades: [],
+        colaboradores: [],
+    },
 }
 
 /* FUNÇÃO DO REDUCER PARA ESCUTAR O SAGAS E ATUALIZAR O STATE */
@@ -17,6 +37,13 @@ function agendamento(state = INITIAL_STATE, action) {
                 draft.agendamentos = action.agendamentos;
                 return draft;
             })
+        }
+         // AÇÃO P/ REDEFINIR O ESTADO DO AGENDAMENTO
+         case types.RESET_AGENDAMENTO: {
+            return produce(state, (draft) => {
+                draft.agendamentos = INITIAL_STATE.agendamentos;
+                return draft;
+            });
         }
         default:
             return state;

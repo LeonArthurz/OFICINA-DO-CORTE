@@ -163,19 +163,23 @@ router.get('/salao/:salaoId', async (req, res) => {
       .populate({ path:'colaboradorId', select:'-senha -recipientId'})
       .select('colaboradorId dataCadastro status');
 
-    for (let vinculo of salaoColaboradores) {
-      const especialidades = await ColaboradorServico.find({
-        colaboradorId: vinculo.colaboradorId._id,
-      });
-    
-      listaColaboradores.push({
-        ...vinculo._doc,
-        especialidades: especialidades.map(
-          (especialidade) => especialidade.servicoId).flat(),
-      });
-    }
+      for (let vinculo of salaoColaboradores) {
+        if (vinculo.colaboradorId) { // Verificar se colaboradorId não é null ou undefined
+          const especialidades = await ColaboradorServico.find({
+            colaboradorId: vinculo.colaboradorId._id,
+          });
       
-
+          listaColaboradores.push({
+            ...vinculo._doc,
+            especialidades: especialidades.map(
+              (especialidade) => especialidade.servicoId
+            ).flat(),
+          });
+        } else {
+          console.log('colaboradorId é null ou undefined para um vinculo:', vinculo);
+        }
+      }
+    //
     res.json({
       error: false,
       colaboradores: listaColaboradores.map((vinculo) => ({
@@ -186,6 +190,8 @@ router.get('/salao/:salaoId', async (req, res) => {
         dataCadastro: moment(vinculo.dataCadastro).format('DD/MM/YYYY'),
       })),
     });
+
+
   } catch (err) {
     res.json({ error: true, message: err.message });
   }

@@ -10,5 +10,4 @@ const types = {
 };
 
 export default types;
-
 // A CONST TYPES SÃO AÇÕES DA APLICAÇÃO REDUX, CADA AÇÃO DISPARA UM EVENTO PARA O REDUX STORE.

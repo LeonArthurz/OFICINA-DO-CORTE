@@ -45,6 +45,7 @@ const Servicos = () => {
     // FUNÇÃO PARA REMOVER SERVICO NA MODAL
     const remove = () => {
         dispatch(removeServico());
+        window.location.reload();
     };
 
     // EFEITO PARA CARREGAR TODOS OS SERVICO AO MONTAR O COMPONENTE

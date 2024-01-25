@@ -14,7 +14,7 @@ const horario = require('../models/horario');
 
 
 
-// ADICIONAR HORÁRIO
+// ADICIONAR AGENDAMENTO
 router.post('/', async (req, res) => {
     try{
 
