@@ -58,6 +58,6 @@ yarn start
 ```
 # Dúvidas
 
-* Contate o desenvoldedor.
+* Contate o desenvolvedor.
 
 **Email:** leonfrantz6@gmail.com
