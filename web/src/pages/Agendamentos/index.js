@@ -9,14 +9,17 @@ import { Calendar, momentLocalizer } from 'react-big-calendar';
 import { Drawer, Button, DatePicker, SelectPicker, InputNumber, Modal, Icon } from 'rsuite';
 // P/ TRABALHAR COM O TEMPO
 import moment from 'moment';
+import 'moment/locale/pt-br';
 // IMPORTAÇÃO P/ CALENDÁRIO
 import 'react-big-calendar/lib/css/react-big-calendar.css'
 // FUNÇÃO P/ AÇÕES
-
 // eslint-disable-next-line no-unused-vars
-import { filterAgendamento, updateAgendamento, resetAgendamento, filterColaboradores } from '../../store/modules/agendamento/actions';
+import { filterAgendamento } from '../../store/modules/agendamento/actions';
+import { allHorarios, updateHorario } from '../../store/modules/horario/actions';
 // FORMATAÇÃO DE TEMPO
 import util from '../../util';
+
+moment.locale('pt-br');
 
 
 // PASSANDO PRO CALENDÁRIO O MOMENT
@@ -49,23 +52,23 @@ const Agendamentos = () => {
     // CRIAR UM EVENTO PARA DISPARAR TODA VEZ QUE ABRIR A TELA DE AGENDAMENTOS
     const dispatch = useDispatch();
     const { agendamentos, form, behavior } = useSelector((state) => state.agendamento);
+    const { horarios } = useSelector((state) => state.horario);
 
     // FORMATAÇÃO DOS AGENDAMENTOS
     const formatEventos = agendamentos && Array.isArray(agendamentos)
-    ? agendamentos.map((agendamento) => {
-        const { servicoId, clienteId, colaboradorId } = agendamento;
-        if (servicoId && clienteId && colaboradorId) {
-          return {
-            title: `${servicoId.titulo} - ${clienteId.nome} - ${colaboradorId.nome}`,
-            start: moment(agendamento.data).toDate(),
-            end: moment(agendamento.data).add(util.hourToMinutes(moment(servicoId.duracao).format('HH:mm')), 'minutes').toDate(),
-          };
-        }
-        return null;
-      })
-    : [];
-  
-  
+        ? agendamentos.map((agendamento) => {
+            const { servicoId, clienteId, colaboradorId } = agendamento;
+            if (servicoId && clienteId && colaboradorId) {
+                return {
+                    title: `${servicoId.titulo} - ${clienteId.nome} - ${colaboradorId.nome}`,
+                    start: moment(agendamento.data).toDate(),
+                    end: moment(agendamento.data).add(util.hourToMinutes(moment(servicoId.duracao).format('HH:mm')), 'minutes').toDate(),
+                };
+            }
+            return null;
+        })
+        : [];
+
     // CONFIGURAÇÃO DO RANGE PARA EXTRAIR O PERÍODO NO CALENDÁRIO
     const formatRange = (periodo) => {
         let finalRange = {};
@@ -83,9 +86,11 @@ const Agendamentos = () => {
 
         return finalRange;
     }
+    
 
     // DISPARAR A AÇÃO DE ATUALIZAÇÃO TODA VEZ QUE O COMPONENTE FOR CARREGADO
     useEffect(() => {
+        dispatch(allHorarios());
         dispatch(
             filterAgendamento(
                 moment().weekday(0).format('YYYY-MM-DD'),
@@ -93,6 +98,7 @@ const Agendamentos = () => {
             )
         );
     }, [dispatch]);
+
 
     // BUSCAS NO BANCO
     useEffect(() => {
@@ -122,33 +128,67 @@ const Agendamentos = () => {
             .catch(error => {
                 console.log('Erro ao buscar dados: ', error);
             });
-
-
+        
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
-    // ENVIAR AGENDAMENTO P/ BACK-END
-    function SubmitAgendamento(clienteId, servicoId, colaboradorId, dataAgendamento, valor) {
+    const [isIndisponivelModalOpen, setIsIndisponivelModalOpen] = useState(false);
 
-        const obj =
-        {
-            "clienteId": clienteId,
-            "salaoId": '6550245f88edacea5bc90c02',
-            "servicoId": servicoId,
-            "colaboradorId": colaboradorId,
-            "data": dataAgendamento,
-            "valor": valor
+    // VERIFICAR HORÁRIO DISPONÍVEL
+    const isHorarioDisponivel = (dataHora, horarios) => {
+        const dataHoraAgendamento = moment(dataHora);
+        const diaAgendamento = dataHoraAgendamento.day();
+        const horarioAgendamento = dataHoraAgendamento.format('HH:mm');
+
+        // Verifica se há algum horário disponível para o dia e horário selecionados
+        for (const horario of horarios) {
+            if (horario.dias.includes(diaAgendamento)) {
+                const inicioDisponivel = moment(horario.inicio).format('HH:mm');
+                const fimDisponivel = moment(horario.fim).format('HH:mm');
+    
+                if (horarioAgendamento >= inicioDisponivel && horarioAgendamento <= fimDisponivel) {
+                    return true; // Horário disponível encontrado
+                }
+            }
         }
+        return false; // Nenhum horário disponível encontrado
+    };
 
-        axios.post('http://localhost:8000/agendamento', obj)
-            .then(response => {
-                setIsModalOpen(true);
 
-            })
-            .catch(error => {
+    // ENVIAR AGENDAMENTO P/ BACK-END
+    const submitAgendamento = () => {
+        // Verificar se o horário está disponível
+        const horarioDisponivel = isHorarioDisponivel(dataHoraFormatada, horarios);
+
+        if (horarioDisponivel) {
+            // Horário disponível, realizar o agendamento
+            axios.post('http://localhost:8000/agendamento', {
+                clienteId: clienteSelecionado,
+                salaoId: '6550245f88edacea5bc90c02',
+                servicoId: servicoSelecionado,
+                colaboradorId: colaboradorSelecionado,
+                data: dataHoraFormatada,
+                valor: valorSelecionado
+            }).then(response => {
+                    setIsModalOpen(true);
+                    const horariosAtualizados = horarios.map(horario => {
+                        if (horario.colaboradores.includes(colaboradorSelecionado)) {
+                            return {
+                                ...horario,
+                                dias: horario.dias.filter(dia => dia !== moment(dataHoraFormatada).day()),
+                            };
+                        }
+                        return horario;
+                    });
+                    dispatch(updateHorario(horariosAtualizados));
+            }).catch(error => {
                 console.log('Erro na requisição POST: ', error);
             });
-    }
+        } else {
+            // Horário não disponível
+            setIsIndisponivelModalOpen(true);
+        }
+    };
 
     const optionsClientes = clientes.map(obj => ({
         label: obj.email,
@@ -233,6 +273,28 @@ const Agendamentos = () => {
 
                 </Modal.Footer>
             </Modal>
+            <Modal
+                show={isIndisponivelModalOpen}
+                onHide={() => setIsIndisponivelModalOpen(false)}
+                size="xs"
+            >
+                <Modal.Body>
+                    <Icon
+                        icon="exclamation-circle"
+                        style={{
+                            color: 'red',
+                            fontSize: 30,
+                        }}
+                    />
+                    {'  '}Horário indisponível. Por favor, escolha outro horário.
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button onClick={() => setIsIndisponivelModalOpen(false)} appearance="subtle">
+                        Fechar
+                    </Button>
+                </Modal.Footer>
+            </Modal>
+
             <Drawer
                 show={openDrawer}
                 size="sm"
@@ -320,7 +382,7 @@ const Agendamentos = () => {
                         color={behavior === 'create' ? 'green' : 'primary'}
                         size="lg"
                         block
-                        onClick={() => SubmitAgendamento(clienteSelecionado, servicoSelecionado, colaboradorSelecionado, dataHoraFormatada, valorSelecionado)}
+                        onClick={() => submitAgendamento(clienteSelecionado, servicoSelecionado, colaboradorSelecionado, dataHoraFormatada, valorSelecionado)}
                         disabled={!clienteSelecionado || !servicoSelecionado || !colaboradorSelecionado || !horarioSelecionado ||
                             !dataSelecionada || !valorSelecionado}
                         className="mt-3"

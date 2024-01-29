@@ -25,6 +25,7 @@ const Horarios = () => {
     const dispatch = useDispatch();
     const { horarios, form, behavior, servicos, colaboradores, horario, components } = useSelector((state) => state.horario);
 
+
     const diasDaSemana = [
         'domingo',
         'segunda-feira',
